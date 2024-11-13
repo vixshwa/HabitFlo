@@ -1,0 +1,422 @@
+<html>
+ <head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+   body {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+        margin: 0;
+    }
+    .container {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+    }
+    .sidebar {
+        background-color: #000000;
+        width: 250px;
+        height: 100vh;
+        padding: 20px;
+        border-right: 1px solid #333;
+        flex-shrink: 0;
+    }
+    .sidebar .title {
+        font-size: 1.875rem;
+        font-weight: bold;
+        margin-bottom: 40px;
+        color: #ffffff;
+    }
+    .sidebar a {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+        color: #ffeb3b;
+        text-decoration: none;
+        font-size: 1.25rem;
+        transition: color 0.2s ease;
+    }
+    .sidebar a i {
+        margin-right: 10px;
+    }
+    .sidebar a:hover {
+        color: #ffd600;
+    }
+    .content {
+        flex-grow: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background-color: #1a1a1a;
+    }
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #333;
+    }
+    .tabs {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0;
+    }
+    .tabs div {
+        cursor: pointer;
+    }
+    .tabs .active {
+        color: #ff0;
+    }
+    .tasks {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    .task {
+        border: 2px solid #ff0;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 10px;
+        position: relative;
+        width: 250px;
+        height: 250px;
+    }
+    .task h3 {
+        margin-bottom: 10px;
+    }
+    .task ul {
+        list-style: none;
+        padding: 0;
+    }
+    .task ul li {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+    .task ul li input {
+        margin-right: 20px;
+    }
+    .progress-circle {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #ff0;
+    }
+    .progress-circle.completed {
+        background-color: #ff0;
+    }
+    .progress-circle.half-completed {
+        background: linear-gradient(to bottom, #ff0 50%, transparent 50%);
+    }
+    .logout {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        color: #ff0;
+    }
+  </style>
+  <script>
+   function updateProgress(taskId) {
+        const checkboxes = document.querySelectorAll(`#${taskId} input[type="checkbox"]`);
+        const total = checkboxes.length;
+        let completed = 0;
+
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                completed++;
+            }
+        });
+
+        const progressCircle = document.querySelector(`#${taskId} .progress-circle`);
+        if (completed === total) {
+            progressCircle.classList.add('completed');
+            progressCircle.classList.remove('half-completed');
+        } else if (completed > 0) {
+            progressCircle.classList.add('half-completed');
+            progressCircle.classList.remove('completed');
+        } else {
+            progressCircle.classList.remove('completed', 'half-completed');
+        }
+    }
+  </script>
+ </head>
+ <body>
+  <div class="container">
+    <div class="sidebar">
+        <div class="title"><a href="dashboard.html" class="hover:text-yellow-300"><i class="fas fa-home"></i> HabitFlo</a></div>
+        <a href="track1.html"><i class="fas fa-chart-line text-yellow-500 text-2xl"></i> Track</a>
+        <a href="calendar.html"><i class="fas fa-calendar-alt text-yellow-500 text-2xl"></i> Calendar</a>
+        <a href="leaderboards.html"><i class="fas fa-trophy text-yellow-500 text-2xl"></i> Leaderboards</a>
+        <a href="friends.html"><i class="fas fa-user-friends text-yellow-500 text-2xl"></i> Friends</a>
+        <a href="settings.html"><i class="fas fa-cog text-yellow-500 text-2xl"></i> Settings</a>
+        <a href="login.html"><i class="fas fa-sign-out-alt text-yellow-500 text-2xl"></i> Logout</a>
+    </div>
+    <div class="content">
+      <div class="header">
+      </div>
+      <div class="tabs">
+       <a href="track1.html">Daily view</a>
+       <div class="active">This week</div>
+       <a href="track3.html" class="text-2xl">Streak</a>
+      </div>
+      <div class="tasks">
+       <div class="task" id="task-today">
+      <h3>
+       @Today
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-today')" type="checkbox" id="today-exercise"/>
+        <label for="today-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-today')" type="checkbox" id="today-study"/>
+        <label for="today-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-today')" type="checkbox" id="today-reading"/>
+        <label for="today-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-sunday">
+      <h3>
+       @Sunday
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-sunday')" type="checkbox" id="sunday-exercise"/>
+        <label for="sunday-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-sunday')" type="checkbox" id="sunday-study"/>
+        <label for="sunday-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-sunday')" type="checkbox" id="sunday-reading"/>
+        <label for="sunday-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-monday">
+      <h3>
+       @Monday
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-monday')" type="checkbox" id="monday-exercise"/>
+        <label for="monday-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-monday')" type="checkbox" id="monday-study"/>
+        <label for="monday-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-monday')" type="checkbox" id="monday-reading"/>
+        <label for="monday-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-tuesday">
+      <h3>
+       @Tuesday
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-tuesday')" type="checkbox" id="tuesday-exercise"/>
+        <label for="tuesday-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-tuesday')" type="checkbox" id="tuesday-study"/>
+        <label for="tuesday-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-tuesday')" type="checkbox" id="tuesday-reading"/>
+        <label for="tuesday-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-wednesday">
+      <h3>
+       @Wednesday
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-wednesday')" type="checkbox" id="wednesday-exercise"/>
+        <label for="wednesday-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-wednesday')" type="checkbox" id="wednesday-study"/>
+        <label for="wednesday-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-wednesday')" type="checkbox" id="wednesday-reading"/>
+        <label for="wednesday-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-thursday">
+      <h3>
+       @Thursday
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-thursday')" type="checkbox" id="thursday-exercise"/>
+        <label for="thursday-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-thursday')" type="checkbox" id="thursday-study"/>
+        <label for="thursday-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-thursday')" type="checkbox" id="thursday-reading"/>
+        <label for="thursday-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-friday">
+      <h3>
+       @Friday
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-friday')" type="checkbox" id="friday-exercise"/>
+        <label for="friday-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-friday')" type="checkbox" id="friday-study"/>
+        <label for="friday-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-friday')" type="checkbox" id="friday-reading"/>
+        <label for="friday-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-nov2">
+      <h3>
+       @November 2, 2024
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-nov2')" type="checkbox" id="nov2-exercise"/>
+        <label for="nov2-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-nov2')" type="checkbox" id="nov2-study"/>
+        <label for="nov2-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-nov2')" type="checkbox" id="nov2-reading"/>
+        <label for="nov2-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-nov3">
+      <h3>
+       @November 3, 2024
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-nov3')" type="checkbox" id="nov3-exercise"/>
+        <label for="nov3-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-nov3')" type="checkbox" id="nov3-study"/>
+        <label for="nov3-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-nov3')" type="checkbox" id="nov3-reading"/>
+        <label for="nov3-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-nov4">
+      <h3>
+       @November 4, 2024
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-nov4')" type="checkbox" id="nov4-exercise"/>
+        <label for="nov4-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-nov4')" type="checkbox" id="nov4-study"/>
+        <label for="nov4-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-nov4')" type="checkbox" id="nov4-reading"/>
+        <label for="nov4-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-nov5">
+      <h3>
+       @November 5, 2024
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-nov5')" type="checkbox" id="nov5-exercise"/>
+        <label for="nov5-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-nov5')" type="checkbox" id="nov5-study"/>
+        <label for="nov5-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-nov5')" type="checkbox" id="nov5-reading"/>
+        <label for="nov5-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+      </div>
+     </div>
+     <div class="task" id="task-nov6">
+      <h3>
+       @November 6, 2024
+      </h3>
+      <ul>
+       <li>
+        <input onclick="updateProgress('task-nov6')" type="checkbox" id="nov6-exercise"/>
+        <label for="nov6-exercise">Exercise</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-nov6')" type="checkbox" id="nov6-study"/>
+        <label for="nov6-study">Study</label>
+       </li>
+       <li>
+        <input onclick="updateProgress('task-nov6')" type="checkbox" id="nov6-reading"/>
+        <label for="nov6-reading">Reading</label>
+       </li>
+      </ul>
+      <div class="progress-circle">
+
+        
+      </div>
+    </div>
+  </div>
+ </body>
+</html>

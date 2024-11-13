@@ -1,0 +1,391 @@
+<html>
+<head>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+        }
+        .sidebar {
+            background-color: #000000;
+            width: 250px;
+            height: 100vh;
+            padding: 20px;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            color: #ffeb3b;
+            text-decoration: none;
+        }
+        .sidebar a i {
+            margin-right: 10px;
+        }
+        .sidebar a:hover {
+            color: #ffd700;
+        }
+        .main-content {
+            padding: 20px;
+            flex-grow: 1;
+        }
+        /* Additional styling for specific elements */
+        .progress-bar {
+            background-color: #ffffff;
+            height: 10px;
+            width: 100%;
+            margin-top: 10px;
+            position: relative;
+        }
+        .progress-bar::after {
+            content: '';
+            background-color: #ffeb3b;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .task {
+            background-color: #808080;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body class="flex">
+    <div class="sidebar">
+        <div class="text-3xl font-bold mb-10">
+            <a href = "dashboard.html" class="hover:text-yellow-300"><i class = "fas fa-home-line"></i>HabitFlo</a>
+        </div>
+        <a href="track1.html"><i class="fas fa-chart-line"></i> Track</a>
+        <a href="calendar.html"><i class="fas fa-calendar-alt"></i> Calendar</a>
+        <a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboards</a>
+        <a href="friends.html"><i class="fas fa-user-friends"></i> Friends</a>
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        <a href="login.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+    <div class="main-content flex flex-col w-full">
+        <div class="flex justify-between items-center mb-10">
+            <div class="text-xl cursor-pointer" onclick="showSearchModal()">🔍 Search Activity</div>
+            <div class="flex items-center">
+                <button class="border-2 border-white px-4 py-2 rounded-full" onclick="showAddTaskModal()">+ Add Activity</button>
+                <div class="ml-4 border-2 border-yellow-500 rounded-full w-10 h-10 flex items-center justify-center">H</div>
+            </div>
+        </div>
+        <div id="greeting" class="text-3xl mb-4"></div>
+        <div class="border-2 border-white p-4 mb-10">
+            <div>You're nearly there, keep going!</div>
+            <div id="goal-status">0/3 goals completed</div>
+            <div class="progress-bar">
+                <div id="progress" class="h-full bg-yellow-500"></div>
+            </div>
+            <div id="progress-percentage" class="text-right">0%</div>
+        </div>
+        <div class="text-2xl mb-4">Today's Tasks:</div>
+        <div id="tasks-container">
+            <div class="task">
+                <div>EXERCISE <span class="text-sm">30 min</span></div>
+                <input type="checkbox" class="task-checkbox">
+            </div>
+            <div class="task">
+                <div>READING <span class="text-sm">10 pages</span></div>
+                <input type="checkbox" class="task-checkbox">
+            </div>
+            <div class="task">
+                <div>STUDY <span class="text-sm">30 min</span></div>
+                <input type="checkbox" class="task-checkbox">
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col items-end p-4">
+        <div class="border-2 border-yellow-500 p-4 mb-4">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded mb-4" onclick="showAddFriendModal()">+ Add Friend</button>
+            <div class="mb-4">Suhani</div>
+            <div class="mb-4">Vishwa</div>
+            <div class="mb-4">Chiranth</div>
+        </div>
+        <div class="calendar">
+            <div class="text-xl mb-2">< October 2024 ></div>
+            <div class="grid grid-cols-7 gap-2 text-center">
+                <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>Sun</div>
+                <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div>
+                <div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div>
+                <div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div><div>21</div>
+                <div>22</div><div>23</div><div>24</div><div>25</div><div>26</div><div>27</div><div>28</div>
+                <div>29</div><div>30</div><div>31</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="add-task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white text-black p-6 rounded-lg">
+            <h2 class="text-2xl mb-4">Add New Task</h2>
+            <input type="text" id="task-name" placeholder="Task Name" class="border p-2 mb-4 w-full">
+            <input type="text" id="task-duration" placeholder="Task Duration" class="border p-2 mb-4 w-full">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="addTask()">Add Task</button>
+            <button class="bg-red-500 text-white px-4 py-2 rounded ml-2" onclick="hideAddTaskModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Add Friend Modal -->
+    <div id="add-friend-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white text-black p-6 rounded-lg">
+            <h2 class="text-2xl mb-4">Add New Friend</h2>
+            <input type="text" id="friend-username" placeholder="Username" class="border p-2 mb-4 w-full">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="addFriend()">Add Friend</button>
+            <button class="bg-red-500 text-white px-4 py-2 rounded ml-2" onclick="hideAddFriendModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Search Task Modal -->
+    <div id="search-task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white text-black p-6 rounded-lg">
+            <h2 class="text-2xl mb-4">Search Tasks</h2>
+            <input type="text" id="search-task" placeholder="Search Task" class="border p-2 mb-4 w-full" oninput="searchTasks()">
+            <div id="search-results" class="border p-2 w-full"></div>
+            <button class="bg-red-500 text-white px-4 py-2 rounded mt-4" onclick="hideSearchModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function updateGreeting() {
+            const now = new Date();
+            const hours = now.getHours();
+            const greetingElement = document.getElementById('greeting');
+            if (hours < 12) {
+                greetingElement.textContent = 'Good Morning, User"!';
+            } else if (hours < 18) {
+                greetingElement.textContent = 'Good Afternoon, User!';
+            } else {
+                greetingElement.textContent = 'Good Evening, User!';
+            }
+        }
+
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const totalTasks = checkboxes.length;
+            let completedTasks = 0;
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    completedTasks++;
+                }
+            });
+
+            const percentage = (completedTasks / totalTasks) * 100;
+            document.getElementById('goal-status').textContent = `${completedTasks}/${totalTasks} goals completed`;
+            document.getElementById('progress').style.width = `${percentage}%`;
+            document.getElementById('progress-percentage').textContent = `${percentage.toFixed(0)}%`;
+        }
+
+        function showAddTaskModal() {
+            document.getElementById('add-task-modal').classList.remove('hidden');
+        }
+
+        function hideAddTaskModal() {
+            document.getElementById('add-task-modal').classList.add('hidden');
+        }
+
+
+
+        function showAddFriendModal() {
+            document.getElementById('add-friend-modal').classList.remove('hidden');
+        }
+
+        function hideAddFriendModal() {
+            document.getElementById('add-friend-modal').classList.add('hidden');
+        }
+
+        function addFriend() {
+            const friendUsername = document.getElementById('friend-username').value;
+
+            if (friendUsername) {
+                const friendContainer = document.querySelector('.border-2.border-yellow-500.p-4.mb-4');
+                const newFriend = document.createElement('div');
+                newFriend.classList.add('mb-4');
+                newFriend.innerHTML = `${friendUsername}`;
+                friendContainer.appendChild(newFriend);
+
+                hideAddFriendModal();
+            }
+        }
+
+        function showSearchModal() {
+            document.getElementById('search-task-modal').classList.remove('hidden');
+        }
+
+        function hideSearchModal() {
+            document.getElementById('search-task-modal').classList.add('hidden');
+        }
+
+        function searchTasks() {
+            const searchTerm = document.getElementById('search-task').value.toLowerCase();
+            const tasks = document.querySelectorAll('.task');
+            const resultsContainer = document.getElementById('search-results');
+            resultsContainer.innerHTML = '';
+
+            tasks.forEach(task => {
+                const taskText = task.textContent.toLowerCase();
+                if (taskText.includes(searchTerm)) {
+                    const result = document.createElement('div');
+                    result.textContent = taskText;
+                    resultsContainer.appendChild(result);
+                }
+            });
+        }
+
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateProgress);
+        });
+    </script>
+    <script>
+    function updateGreeting() {
+        const now = new Date();
+        const hours = now.getHours();
+        const greetingElement = document.getElementById('greeting');
+        if (hours < 12) {
+            greetingElement.textContent = 'Good Morning, user!';
+        } else if (hours < 18) {
+            greetingElement.textContent = 'Good Afternoon, user';
+        } else {
+            greetingElement.textContent = 'Good Evening'  + ', user';
+
+        }
+    }
+
+    function updateProgress()
+     {
+    
+        const checkboxes = document.querySelectorAll('.task-checkbox');
+        const totalTasks = checkboxes.length;
+        let completedTasks = 0;
+
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                completedTasks++;
+            }
+        });
+
+        const percentage = (completedTasks / totalTasks) * 100;
+        document.getElementById('goal-status').textContent = `${completedTasks}/${totalTasks} goals completed`;
+        document.getElementById('progress').style.width = `${percentage}%`;
+        document.getElementById('progress-percentage').textContent = `${percentage.toFixed(0)}%`;
+    }
+
+    function showAddTaskModal() {
+        document.getElementById('add-task-modal').classList.remove('hidden');
+    }
+
+    function hideAddTaskModal() {
+        document.getElementById('add-task-modal').classList.add('hidden');
+    }
+
+    function addTask() {
+    const taskName = document.getElementById('task-name').value;
+    const taskDuration = document.getElementById('task-duration').value;
+    const mail = "username@gmail.com";
+    if (taskName && taskDuration) {
+        // Send a POST request to the backend
+        fetch('http://localhost:3000/api/tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: mail,
+                title: taskName,
+                description: taskDuration,
+                dueDate: new Date(),
+            }),
+        })
+        .then(response => {
+            if (!response.ok) {  // Check if the response is OK
+                throw new Error('Network response was not ok');
+            }
+            return response.json(); // Parse JSON if the response was OK
+        })
+        .then(data => {
+            const task = data.task; // Access the `task` from the JSON response
+            // Create and append the new task to the DOM
+            const taskContainer = document.getElementById('tasks-container');
+            const newTask = document.createElement('div');
+            newTask.classList.add('task');
+            newTask.innerHTML = `
+                <div>${task.title} <span class="text-sm">${task.description}</span></div>
+                <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+            `;
+            taskContainer.appendChild(newTask);
+
+            // Update the progress after adding a new task
+            updateProgress();
+
+            hideAddTaskModal();
+        })
+        .catch(error => {
+            console.error('Error adding task:', error);
+        });
+    } else {
+        alert("Please fill in both fields."); // Alert for missing fields
+    }
+}
+
+
+    function showAddFriendModal() {
+        document.getElementById('add-friend-modal').classList.remove('hidden');
+    }
+
+    function hideAddFriendModal() {
+        document.getElementById('add-friend-modal').classList.add('hidden');
+    }
+
+    function addFriend() {
+        const friendUsername = document.getElementById('friend-username').value;
+
+        if (friendUsername) {
+            const friendContainer = document.querySelector('.border-2.border-yellow-500.p-4.mb-4');
+            const newFriend = document.createElement('div');
+            newFriend.classList.add('mb-4');
+            newFriend.innerHTML = `${friendUsername}`;
+            friendContainer.appendChild(newFriend);
+
+            hideAddFriendModal();
+        }
+    }
+
+    function showSearchModal() {
+        document.getElementById('search-task-modal').classList.remove('hidden');
+    }
+
+    function hideSearchModal() {
+        document.getElementById('search-task-modal').classList.add('hidden');
+    }
+
+    function searchTasks() {
+        const searchTerm = document.getElementById('search-task').value.toLowerCase();
+        const tasks = document.querySelectorAll('.task');
+        const resultsContainer = document.getElementById('search-results');
+        resultsContainer.innerHTML = '';
+
+        tasks.forEach(task => {
+            const taskText = task.textContent.toLowerCase();
+            if (taskText.includes(searchTerm)) {
+                const result = document.createElement('div');
+                result.textContent = taskText;
+                resultsContainer.appendChild(result);
+            }
+        });
+    }
+
+    updateGreeting();
+    updateProgress();
+
+    </script>
+</body>
+</html>

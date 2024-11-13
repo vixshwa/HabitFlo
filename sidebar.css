@@ -1,0 +1,27 @@
+/* sidebar.css */
+.sidebar {
+    background-color: #000000;
+    width: 250px;
+    height: 100vh;
+    padding: 20px;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    color: #ffeb3b; /* Yellow text color */
+    text-decoration: none;
+    font-family: Arial, sans-serif; /* Consistent font across pages */
+}
+
+.sidebar a i {
+    margin-right: 10px;
+    color: #ffeb3b; /* Yellow icon color */
+    font-size: 1.5em; /* Adjust icon size as needed */
+}
+
+.sidebar a:hover {
+    background-color: #333; /* Darker background on hover */
+    border-radius: 5px;
+}

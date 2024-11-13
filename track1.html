@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Daily Habits - HabitFlo</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+        }
+        .sidebar {
+            background-color: #000000;
+            width: 250px;
+            height: 100vh;
+            padding: 20px;
+            border-right: 1px solid #333;
+            flex-shrink: 0;
+        }
+        .sidebar .title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin-bottom: 40px;
+            color: #ffffff;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            color: #ffeb3b;
+            text-decoration: none;
+            font-size: 1.25rem;
+            transition: color 0.2s ease;
+        }
+        .sidebar a i {
+            margin-right: 10px;
+        }
+        .sidebar a:hover {
+            color: #ffd600;
+        }
+        .main-content {
+            padding: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        /* Modal and other custom styles */
+        .circle {
+            width: 150px;
+            height: 150px;
+            border: 8px solid #ffeb3b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background-color: #333;
+            color: #ffeb3b;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border: 2px solid #ffeb3b;
+            width: 300px;
+            border-radius: 10px;
+            color: #ffffff;
+        }
+        .modal-content button {
+            background-color: #ffeb3b;
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .modal-content button:hover {
+            background-color: #ffd600;
+        }
+    </style>
+    <script>
+        function openModal() {
+            document.getElementById('myModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = 'none';
+        }
+
+        function addTask() {
+            const habit = document.getElementById('habitInput').value;
+            if (habit) {
+                const taskList = document.getElementById('task-list');
+                const newTask = document.createElement('div');
+                newTask.className = 'flex items-center justify-between border border-gray-700 p-4 task-item';
+                newTask.innerHTML = `
+                    <div class="text-xl">${habit}</div>
+                    <div class="flex items-center space-x-4">
+                        <input type="checkbox" class="w-8 h-8 border border-yellow-500" onchange="updateProgress()">
+                        <button onclick="deleteTask(this)" class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                taskList.appendChild(newTask);
+                closeModal();
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('#task-list input[type="checkbox"]');
+            const totalTasks = checkboxes.length;
+            const completedTasks = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
+            const percentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+            document.getElementById('progressPercentage').innerText = `${percentage}%`;
+        }
+
+        function deleteTask(button) {
+            const task = button.closest('.task-item');
+            task.remove();
+            updateProgress();
+        }
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="title"><a href="dashboard.html" class="hover:text-yellow-300"><i class="fas fa-home"></i> HabitFlo</a></div>
+        <a href="track1.html"><i class="fas fa-chart-line text-yellow-500 text-2xl"></i> Track</a>
+        <a href="calendar.html"><i class="fas fa-calendar-alt text-yellow-500 text-2xl"></i> Calendar</a>
+        <a href="leaderboards.html"><i class="fas fa-trophy text-yellow-500 text-2xl"></i> Leaderboards</a>
+        <a href="friends.html"><i class="fas fa-user-friends text-yellow-500 text-2xl"></i> Friends</a>
+        <a href="settings.html"><i class="fas fa-cog text-yellow-500 text-2xl"></i> Settings</a>
+        <a href="login.html"><i class="fas fa-sign-out-alt text-yellow-500 text-2xl"></i> Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="border-b border-gray-700 mb-4"></div>
+        <div class="flex items-center justify-between mb-2">
+            <div class="text-2xl text-yellow-500">Daily View</div>
+            <a href="track2.html" class="text-2xl">This week</a>
+            <a href="track3.html" class="text-2xl">Streak</a>
+        </div>
+        <div class="text-3xl mb-4">Today</div>
+        <div class="flex justify-center mb-4">
+            <div class="relative circle">
+                <div id="progressPercentage" class="text-4xl text-yellow-500">0%</div>
+            </div>
+        </div>
+        <div id="task-list" class="space-y-4">
+            <!-- Task items here -->
+        </div>
+        <div class="flex justify-end mt-4 space-x-4">
+            <button onclick="openModal()" class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center">
+                <i class="fas fa-plus text-black"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="myModal" class="modal flex items-center justify-center">
+        <div class="modal-content">
+            <span class="text-2xl text-yellow-500 mb-4 block">Add New Task</span>
+            <input type="text" id="habitInput" class="border border-gray-700 w-full p-2 mb-4" placeholder="Enter task name...">
+            <button onclick="addTask()" class="bg-yellow-500 text-black w-full py-2 rounded">Add Task</button>
+            <button onclick="closeModal()" class="bg-red-500 text-white w-full py-2 mt-2 rounded">Cancel</button>
+        </div>
+    </div>
+</body>
+</html>

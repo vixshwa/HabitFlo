@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        font-family: 'Arial', sans-serif;
+    }
+    .sidebar {
+        background-color: #000000;
+        width: 250px;
+        height: 100vh;
+        padding: 20px;
+    }
+    .sidebar a {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        color: #ffeb3b;
+        text-decoration: none;
+    }
+    .sidebar a i {
+        margin-right: 10px;
+    }
+    .sidebar a:hover {
+        color: #ffd700;
+    }
+    .main-content {
+        padding: 20px;
+        flex-grow: 1;
+    }
+    .calendar {
+        border: 2px solid #ffeb3b;
+        padding: 10px;
+        margin-top: 20px;
+    }
+    .calendar h2 {
+        color: #ffeb3b;
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    .calendar table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .calendar th, .calendar td {
+        border: 1px solid #ffffff;
+        padding: 10px;
+        text-align: center;
+        width: calc(100% / 7);
+        height: 100px;
+        vertical-align: top;
+        position: relative;
+    }
+    .calendar .today {
+        border: 2px solid #ffeb3b;
+        border-radius: 50%;
+        padding: 5px;
+    }
+        .upcoming {
+            background-color: #1a1a1a;
+            width: 15%;
+            height: 100vh;
+            padding: 20px;
+        }
+        .upcoming h2 {
+            color: #ffeb3b;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .upcoming .event {
+            background-color: #ffeb3b;
+            color: #1a1a1a;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            position: relative;
+        }
+        .upcoming .event .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+        .event-form {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+        .event-form form {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .event-form input, .event-form textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+        }
+        .event-form button {
+            background-color: #ffeb3b;
+            color: #1a1a1a;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .event-form .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="flex">
+    <div class="sidebar">
+        <div class="text-3xl font-bold mb-10">
+            <a href = "dashboard.html" class="hover:text-yellow-300"><i class = "fas fa-home-line"></i>HabitFlo</a>
+        </div>
+        <a href="track1.html"><i class="fas fa-chart-line"></i> Track</a>
+        <a href="calendar.html"><i class="fas fa-calendar-alt"></i> Calendar</a>
+        <a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboards</a>
+        <a href="friends.html"><i class="fas fa-user-friends"></i> Friends</a>
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        <a href="file:///C:/Users/vishw/OneDrive/Desktop/New%20folder/frontend/login.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+<div class="main-content">
+    <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center">
+            <button class="border-2 border-white px-2 py-1 mr-2" id="todayBtn">today</button>
+            <button class="border-2 border-white px-2 py-1" id="prevMonthBtn">&lt;</button>
+            <button class="border-2 border-white px-2 py-1" id="nextMonthBtn">&gt;</button>
+        </div>
+    </div>
+    <div class="calendar">
+        <h2 id="calendarTitle">October 2024</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                    <th>Sun</th>
+                </tr>
+            </thead>
+            <tbody id="calendarBody">
+                <!-- Calendar dates will be dynamically generated here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="upcoming">
+    <h2>Upcoming</h2>
+    <div id="upcoming-events"></div>
+</div>
+
+<div class="event-form flex" id="event-form">
+    <form id="eventForm">
+        <span class="close-btn text-white">&times;</span>
+        <h2 class="text-white mb-4">Add Event</h2>
+        <input type="text" id="eventTitle" placeholder="Event Title" required>
+        <textarea id="eventDescription" placeholder="Event Description" required></textarea>
+        <input type="datetime-local" id="eventDateTime" required>
+        <button type="submit">Add Event</button>
+    </form>
+</div>
+
+<script>
+    const calendarTitle = document.getElementById('calendarTitle');
+    const calendarBody = document.getElementById('calendarBody');
+    const eventForm = document.getElementById('event-form');
+    const eventFormElement = document.getElementById('eventForm');
+    const upcomingEvents = document.getElementById('upcoming-events');
+    const todayBtn = document.getElementById('todayBtn');
+    const prevMonthBtn = document.getElementById('prevMonthBtn');
+    const nextMonthBtn = document.getElementById('nextMonthBtn');
+    const closeFormBtn = document.querySelector('.event-form .close-btn');
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    const today = new Date();
+
+    function generateCalendar(month, year) {
+        calendarBody.innerHTML = '';
+        const firstDay = new Date(year, month).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        let date = 1;
+
+        for (let i = 0; i < 6; i++) {
+            const row = document.createElement('tr');
+
+            for (let j = 0; j < 7; j++) {
+                const cell = document.createElement('td');
+                if (i === 0 && j < firstDay) {
+                    cell.innerHTML = '';
+                } else if (date > daysInMonth) {
+                    break;
+                } else {
+                    cell.innerHTML = date;
+                    cell.addEventListener('click', () => {
+                        eventForm.style.display = 'flex';
+                        eventForm.dataset.date = date;
+                        eventForm.dataset.month = month;
+                        eventForm.dataset.year = year;
+                    });
+                    date++;
+                }
+                row.appendChild(cell);
+            }
+            calendarBody.appendChild(row);
+        }
+        calendarTitle.innerHTML = `${new Date(year, month).toLocaleString('default', { month: 'long' })} ${year}`;
+    }
+
+    function updateUpcomingEvents() {
+        const events = JSON.parse(localStorage.getItem('events')) || {};
+        const monthKey = `${currentYear}-${currentMonth}`;
+        const monthEvents = events[monthKey] || [];
+        upcomingEvents.innerHTML = '';
+        monthEvents.forEach((event, index) => {
+            const eventDate = new Date(event.dateTime);
+            if (eventDate >= today) {
+                const eventElement = document.createElement('div');
+                eventElement.classList.add('event');
+                eventElement.innerHTML = `<span class="close-btn">&times;</span><h3>${eventDate.toDateString()}</h3><div>${event.title} <br> ${eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
+                eventElement.querySelector('.close-btn').addEventListener('click', () => {
+                    removeEvent(index);
+                });
+                upcomingEvents.appendChild(eventElement);
+            }
+        });
+    }
+
+    function saveEvent(event) {
+        const events = JSON.parse(localStorage.getItem('events')) || {};
+        const monthKey = `${event.year}-${event.month}`;
+        if (!events[monthKey]) {
+            events[monthKey] = [];
+        }
+        events[monthKey].push(event);
+        localStorage.setItem('events', JSON.stringify(events));
+    }
+
+    function loadEvents() {
+        const events = JSON.parse(localStorage.getItem('events')) || {};
+        const monthKey = `${currentYear}-${currentMonth}`;
+        const monthEvents = events[monthKey] || [];
+        monthEvents.forEach(event => {
+            const eventDate = new Date(event.dateTime);
+            const cell = Array.from(calendarBody.querySelectorAll('td')).find(cell => cell.innerText == eventDate.getDate());
+            if (cell) {
+                const eventInfo = document.createElement('div');
+                eventInfo.innerHTML = `<small>${event.title} <br> ${eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>`;
+                cell.appendChild(eventInfo);
+            }
+        });
+    }
+
+    function removeEvent(index) {
+        const events = JSON.parse(localStorage.getItem('events')) || {};
+        const monthKey = `${currentYear}-${currentMonth}`;
+        if (events[monthKey]) {
+            events[monthKey].splice(index, 1);
+            localStorage.setItem('events', JSON.stringify(events));
+            updateUpcomingEvents();
+            generateCalendar(currentMonth, currentYear);
+            loadEvents();
+        }
+    }
+
+    eventFormElement.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('eventTitle').value;
+        const description = document.getElementById('eventDescription').value;
+        const dateTime = document.getElementById('eventDateTime').value;
+        const date = new Date(dateTime);
+        const dateString = date.toDateString();
+        const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const event = {
+            title,
+            description,
+            dateTime,
+            month: date.getMonth(),
+            year: date.getFullYear()
+        };
+
+        saveEvent(event);
+
+        const eventElement = document.createElement('div');
+        eventElement.classList.add('event');
+        eventElement.innerHTML = `<span class="close-btn">&times;</span><h3>${dateString}</h3><div>${title} <br> ${timeString}</div>`;
+        eventElement.querySelector('.close-btn').addEventListener('click', () => {
+            removeEvent(eventElement);
+        });
+        upcomingEvents.appendChild(eventElement);
+
+        const cell = Array.from(calendarBody.querySelectorAll('td')).find(cell => cell.innerText == date.getDate());
+        if (cell) {
+            const eventInfo = document.createElement('div');
+            eventInfo.innerHTML = `<small>${title} <br> ${timeString}</small>`;
+            cell.appendChild(eventInfo);
+        }
+
+        eventForm.style.display = 'none';
+        eventFormElement.reset();
+    });
+
+    todayBtn.addEventListener('click', () => {
+        currentMonth = today.getMonth();
+        currentYear = today.getFullYear();
+        generateCalendar(currentMonth, currentYear);
+        loadEvents();
+    });
+
+    prevMonthBtn.addEventListener('click', () => {
+        currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
+        currentYear = (currentMonth === 11) ? currentYear - 1 : currentYear;
+        generateCalendar(currentMonth, currentYear);
+        loadEvents();
+    });
+
+    nextMonthBtn.addEventListener('click', () => {
+        currentMonth = (currentMonth === 11) ? 0 : currentMonth + 1;
+        currentYear = (currentMonth === 0) ? currentYear + 1 : currentYear;
+        generateCalendar(currentMonth, currentYear);
+        loadEvents();
+    });
+
+    closeFormBtn.addEventListener('click', () => {
+        eventForm.style.display = 'none';
+    });
+
+    generateCalendar(currentMonth, currentYear);
+    loadEvents();
+    updateUpcomingEvents();
+</script>
+
+
+    <script>
+        const apiUrl = 'http://localhost:3000/api/events'; // URL of your backend API
+
+        function fetchEvents() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(events => {
+                    const calendarContainer = document.querySelector('.calendar');
+                    calendarContainer.innerHTML = '';
+                    events.forEach(event => {
+                        const eventDiv = document.createElement('div');
+                        eventDiv.classList.add('event');
+                        eventDiv.innerHTML = `
+                            <div>${event.title}</div>
+                            <div>${new Date(event.date).toLocaleDateString()}</div>
+                        `;
+                        calendarContainer.appendChild(eventDiv);
+                    });
+                })
+                .catch(error => console.error('Error fetching events:', error));
+        }
+
+        function addEvent() {
+            const title = document.getElementById('event-title').value;
+            const date = document.getElementById('event-date').value;
+
+            if (title && date) {
+                fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, date }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Event added:', data);
+                    fetchEvents();
+                    document.getElementById('event-title').value = '';
+                    document.getElementById('event-date').value = '';
+                })
+                .catch(error => console.error('Error adding event:', error));
+            } else {
+                alert('Please enter both title and date for the event.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchEvents);
+    </script>
+</body>
+</html>
+

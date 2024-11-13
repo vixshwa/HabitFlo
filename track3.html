@@ -1,0 +1,591 @@
+<html>
+ <head>
+  <title>
+   HabitFlo
+  </title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+   body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .sidebar {
+            width: 20%;
+            background-color: #1a1a1a;
+            padding: 20px;
+            box-sizing: border-box;
+            border-right: 1px solid #ffffff;
+        }
+        .sidebar h1 {
+            color: #ffeb3b;
+            font-size: 48px;
+            margin: 0 0 10px 0;
+            text-align: left;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+        .sidebar ul li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            color: #ffeb3b;
+            font-size: 24px;
+            cursor: pointer;
+            justify-content: left;
+        }
+        .sidebar ul li i {
+            margin-right: 10px;
+        }
+        .sidebar ul li.active {
+            background-color: #4a4a4a;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .main-content {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            border-bottom: 1px solid #ffffff;
+        }
+        .header img {
+            width: 50px;
+            height: 50px;
+        }
+        .header div {
+            display: flex;
+            align-items: center;
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .tabs div {
+            color: #ffffff;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+        .tabs div.active {
+            color: #ffeb3b;
+        }
+        .table-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .table {
+            width: 80%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            border: 1px solid #ffffff;
+            padding: 15px;
+            text-align: center;
+        }
+        .table th {
+            background-color: #4a4a4a;
+        }
+        .table td {
+            background-color: #1a1a1a;
+        }
+        .table th:first-child, .table td:first-child {
+            text-align: left;
+        }
+        .table th:last-child, .table td:last-child {
+            text-align: right;
+        }
+        .table th i, .table td i {
+            color: #ffeb3b;
+        }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            color: #ffeb3b;
+            font-size: 24px;
+            width: 80%;
+        }
+        .footer div {
+            width: 20%;
+            text-align: center;
+        }
+        .footer .streak {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 20%;
+        }
+        #study-streak, #exercise-streak, #reading-streak {
+            margin-left: 10px;
+        }
+        .streak i {
+            margin-right: 5px;
+        }
+        .habit-checkbox {
+            width: 20px;
+            height: 20px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #1a1a1a;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            color: #ffffff;
+        }
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+  </style>
+  <script>
+   document.addEventListener("DOMContentLoaded", function() {
+            var today = new Date();
+            var nextWeek = new Date(today);
+            nextWeek.setDate(today.getDate() + 7);
+            var dateString = nextWeek.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById("current-date").innerText = "@" + dateString;
+
+            var studyStreak = 0;
+            var exerciseStreak = 0;
+            var readingStreak = 0;
+
+            function updateStreaks() {
+                document.getElementById("study-streak").innerText = studyStreak;
+                document.getElementById("exercise-streak").innerText = exerciseStreak;
+                document.getElementById("reading-streak").innerText = readingStreak;
+            }
+
+            document.querySelectorAll(".habit-checkbox").forEach(function(checkbox) {
+                checkbox.addEventListener("change", function() {
+                    var row = this.closest("tr");
+                    var allChecked = Array.from(row.querySelectorAll(".habit-checkbox")).every(function(cb) {
+                        return cb.checked;
+                    });
+                    if (allChecked) {
+                        row.querySelector(".day-status").innerHTML = '<i class="fas fa-check"></i> ' + row.querySelector(".day-status").innerText.trim();
+                    } else {
+                        row.querySelector(".day-status").innerHTML = '<i class="fas fa-circle"></i> ' + row.querySelector(".day-status").innerText.trim();
+                    }
+
+                    if (this.checked) {
+                        var habit = this.getAttribute("data-habit");
+                        if (habit === "study") {
+                            studyStreak++;
+                        } else if (habit === "exercise") {
+                            exerciseStreak++;
+                        } else if (habit === "reading") {
+                            readingStreak++;
+                        }
+                    } else {
+                        var habit = this.getAttribute("data-habit");
+                        if (habit === "study") {
+                            studyStreak--;
+                        } else if (habit === "exercise") {
+                            exerciseStreak--;
+                        } else if (habit === "reading") {
+                            readingStreak--;
+                        }
+                    }
+                    updateStreaks();
+                });
+            });
+
+            updateStreaks();
+
+            document.querySelectorAll(".sidebar ul li").forEach(function(item) {
+                item.addEventListener("click", function() {
+                    var page = this.getAttribute("data-page");
+                    if (page) {
+                        window.location.href = page + ".html";
+                    }
+                });
+            });
+
+            var modal = document.getElementById("myModal");
+            var btn = document.getElementById("addTaskBtn");
+            var span = document.getElementsByClassName("close")[0];
+
+            btn.onclick = function() {
+                modal.style.display = "block";
+            }
+
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            document.getElementById("addTaskForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+                var date = document.getElementById("taskDate").value;
+                var day = document.getElementById("taskDay").value;
+                var newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td class="day-status"><i class="fas fa-circle"></i> @${day}</td>
+                    <td><input class="habit-checkbox" data-habit="study" type="checkbox"/></td>
+                    <td><input class="habit-checkbox" data-habit="exercise" type="checkbox"/></td>
+                    <td><input class="habit-checkbox" data-habit="reading" type="checkbox"/></td>
+                    <td></td>
+                `;
+                document.querySelector(".table tbody").appendChild(newRow);
+                modal.style.display = "none";
+            });
+        });
+  </script>
+ </head>
+ <body>
+  <div class="container">
+   <div class="sidebar">
+    <h1>
+     HabitFlo.
+    </h1>
+    <ul>
+     <li class="active" data-page="track">
+      <i class="fas fa-chart-line">
+      </i>
+      Track
+     </li>
+     <li data-page="calendar">
+      <i class="fas fa-calendar-alt">
+      </i>
+      Calendar
+     </li>
+     <li data-page="leaderboards">
+      <i class="fas fa-trophy">
+      </i>
+      Leaderboards
+     </li>
+     <li data-page="friends">
+      <i class="fas fa-user-friends">
+      </i>
+      Friends
+     </li>
+     <li data-page="settings">
+      <i class="fas fa-cog">
+      </i>
+      Settings
+     </li>
+     <li data-page="logout">
+      <i class="fas fa-sign-out-alt">
+      </i>
+      Logout
+     </li>
+    </ul>
+   </div>
+   <div class="main-content">
+    <div class="header">
+     <div>
+     </div>
+     <div>
+     </div>
+    </div>
+    <div class="tabs">
+     <div>
+      Daily View
+     </div>
+     <div>
+      This week
+     </div>
+     <div class="active">
+      Streak
+      <i class="fas fa-crown">
+      </i>
+     </div>
+    </div>
+    <div class="table-container">
+     <table class="table">
+      <thead>
+       <tr>
+        <th>
+         Day
+        </th>
+        <th>
+         <i class="fas fa-check">
+         </i>
+         Study
+        </th>
+        <th>
+         <i class="fas fa-check">
+         </i>
+         Exercise
+        </th>
+        <th>
+         <i class="fas fa-check">
+         </i>
+         Reading
+        </th>
+        <th>
+         <i class="fas fa-plus" id="addTaskBtn">
+         </i>
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td class="day-status">
+         <i class="fas fa-circle">
+         </i>
+         @Today
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="study" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="exercise" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="reading" type="checkbox"/>
+        </td>
+        <td>
+        </td>
+       </tr>
+       <tr>
+        <td class="day-status">
+         <i class="fas fa-circle">
+         </i>
+         @Sunday
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="study" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="exercise" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="reading" type="checkbox"/>
+        </td>
+        <td>
+        </td>
+       </tr>
+       <tr>
+        <td class="day-status">
+         <i class="fas fa-circle">
+         </i>
+         @Monday
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="study" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="exercise" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="reading" type="checkbox"/>
+        </td>
+        <td>
+        </td>
+       </tr>
+       <tr>
+        <td class="day-status">
+         <i class="fas fa-circle">
+         </i>
+         @Tuesday
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="study" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="exercise" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="reading" type="checkbox"/>
+        </td>
+        <td>
+        </td>
+       </tr>
+       <tr>
+        <td class="day-status">
+         <i class="fas fa-circle">
+         </i>
+         @Wednesday
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="study" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="exercise" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="reading" type="checkbox"/>
+        </td>
+        <td>
+        </td>
+       </tr>
+       <tr>
+        <td class="day-status">
+         <i class="fas fa-circle">
+         </i>
+         @Thursday
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="study" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="exercise" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="reading" type="checkbox"/>
+        </td>
+        <td>
+        </td>
+       </tr>
+       <tr>
+        <td class="day-status">
+         <i class="fas fa-circle">
+         </i>
+         @Friday
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="study" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="exercise" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="reading" type="checkbox"/>
+        </td>
+        <td>
+        </td>
+       </tr>
+       <tr>
+        <td class="day-status" id="current-date">
+         <i class="fas fa-circle">
+         </i>
+         @Today
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="study" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="exercise" type="checkbox"/>
+        </td>
+        <td>
+         <input class="habit-checkbox" data-habit="reading" type="checkbox"/>
+        </td>
+        <td>
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="footer">
+     <div>
+     </div>
+     <div class="streak">
+      <i class="fas fa-fire"></i>
+      <div id="study-streak">0</div>
+     </div>
+     <div class="streak">
+      <i class="fas fa-fire"></i>
+      <div id="exercise-streak">0</div>
+     </div>
+     <div class="streak">
+      <i class="fas fa-fire"></i>
+      <div id="reading-streak">0</div>
+     </div>
+    </div>
+   </div>
+   <div class="modal" id="myModal">
+    <div class="modal-content">
+     <span class="close">
+      &times;
+     </span>
+     <form id="addTaskForm">
+      <label for="taskDate">
+       Date:
+      </label>
+      <input id="taskDate" name="taskDate" type="date"/>
+      <label for="taskDay">
+       Day:
+      </label>
+      <select id="taskDay" name="taskDay">
+       <option value="Today">
+        Today
+       </option>
+       <option value="Sunday">
+        Sunday
+       </option>
+       <option value="Monday">
+        Monday
+       </option>
+       <option value="Tuesday">
+        Tuesday
+       </option>
+       <option value="Wednesday">
+        Wednesday
+       </option>
+       <option value="Thursday">
+        Thursday
+       </option>
+       <option value="Friday">
+        Friday
+       </option>
+       <option value="Saturday">
+        Saturday
+       </option>
+      </select>
+      <button type="submit">
+       Add Task
+      </button>
+     </form>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

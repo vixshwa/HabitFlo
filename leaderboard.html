@@ -1,0 +1,127 @@
+<html>
+ <head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    .sidebar {
+        background-color: #000000;
+        width: 250px;
+        height: 100vh;
+        padding: 20px;
+    }
+    .sidebar a {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        color: #ffeb3b;
+        text-decoration: none;
+    }
+    .sidebar a i {
+        margin-right: 10px;
+    }
+    .sidebar a:hover {
+        color: #ffd700;
+    }
+    .main-content {
+        padding: 20px;
+        flex-grow: 1;
+    }
+    /* Additional styling for specific elements */
+    .highlight {
+        background-color: #4a4a4a;
+        padding: 10px;
+        border-radius: 4px;
+    }
+</style>
+</head>
+<body class="flex">
+<div class="sidebar">
+    <div class="text-3xl font-bold mb-10">
+        <a href="dashboard.html" class="hover:text-yellow-300"><i class="fas fa-home-line"></i>HabitFlo</a>
+    </div>
+    <a href="track1.html"><i class="fas fa-chart-line"></i> Track</a>
+    <a href="calendar.html"><i class="fas fa-calendar-alt"></i> Calendar</a>
+    <a href="leaderboard.html" class="highlight"><i class="fas fa-trophy"></i> Leaderboard</a>
+    <a href="friends.html"><i class="fas fa-user-friends"></i> Friends</a>
+    <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+    <a href="login.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+  <div class="flex-1 p-8">
+   <div class="flex justify-between items-center mb-8">
+    <div class="flex items-center">
+     <i class="fas fa-search text-white mr-2"></i>
+     <input type="text" id="searchInput" class="bg-gray-800 text-white p-2 rounded" placeholder="Search Activity" onkeyup="searchActivities()">
+    </div>
+    <div class="flex items-center space-x-4">
+     <i class="fas fa-share-alt text-custom-yellow cursor-pointer"></i>
+     <div class="w-8 h-8 rounded-full border border-custom-yellow flex items-center justify-center text-custom-yellow">H</div>
+    </div>
+   </div>
+   <h2 class="text-3xl text-custom-yellow mb-2">Leaderboard</h2>
+   <p class="mb-8">current leaderboard for October 2024</p>
+   <div class="flex justify-around mb-8">
+    <div class="text-center">
+     <span class="crown mx-auto mb-2" style="font-size: 50px;">🥈</span>
+     <p>@SuhaniS</p>
+     <p>2nd</p>
+    </div>
+    <div class="text-center crown-middle">
+     <span class="crown mx-auto mb-2" style="font-size: 50px;">🥇</span>
+     <p>@You</p>
+     <p>1st</p>
+    </div>
+    <div class="text-center">
+     <span class="crown mx-auto mb-2" style="font-size: 50px;">🥉</span>
+     <p>@Chirant</p>
+     <p>3rd</p>
+    </div>
+   </div>
+   <div class="grid grid-cols-4 gap-4 text-center" id="activityList">
+    <div>PLACE</div>
+    <div>USER</div>
+    <div>LAST ACTIVITY</div>
+    <div>STREAKS</div>
+    <div>🏆 4</div>
+    <div>@vishwa</div>
+    <div>1d ago</div>
+    <div>🔥 5</div>
+    <div>🏆 5</div>
+    <div>@mosambi</div>
+    <div>1d ago</div>
+    <div>🔥 4</div>
+    <div>🏆 6</div>
+    <div>@transformes</div>
+    <div>1d ago</div>
+    <div>🔥 4</div>
+   </div>
+  </div>
+  <script>
+    function searchActivities() {
+      const input = document.getElementById('searchInput');
+      const filter = input.value.toLowerCase();
+      const activityList = document.getElementById('activityList');
+      const activities = activityList.getElementsByTagName('div');
+
+      for (let i = 0; i < activities.length; i += 4) {
+        const user = activities[i + 1].textContent || activities[i + 1].innerText;
+        if (user.toLowerCase().indexOf(filter) > -1) {
+          activities[i].style.display = '';
+          activities[i + 1].style.display = '';
+          activities[i + 2].style.display = '';
+          activities[i + 3].style.display = '';
+        } else {
+          activities[i].style.display = 'none';
+          activities[i + 1].style.display = 'none';
+          activities[i + 2].style.display = 'none';
+          activities[i + 3].style.display = 'none';
+        }
+      }
+    }
+  </script>
+ </body>
+</html>
